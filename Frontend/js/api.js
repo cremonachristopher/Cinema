@@ -38,6 +38,7 @@ async function loadMovies() {
                         Affiche : ${movie.title}
                     </div>
                     <h4 class="font-bold text-lg truncate">${movie.title}</h4>
+                    <p class="text-gray-400 text-xs mb-1">par ${movie.director || 'Réalisateur inconnu'}</p>
                     <p class="text-red-500 text-xs font-bold mb-2 uppercase tracking-wider">${movie.genre || 'Cinéma'}</p>
                     
                     <p class="text-gray-400 text-sm mb-4 line-clamp-3 italic flex-grow">
@@ -153,6 +154,7 @@ async function deleteScreening(id) {
 function editMovie(movie) {
     const form = document.getElementById('add-movie-form');
     form.title.value = movie.title;
+    form.director.value = movie.director || '';
     form.genre.value = movie.genre;
     form.duration.value = movie.duration;
     form.release_year.value = movie.release_year;
