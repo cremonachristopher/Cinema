@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineFlash - Administration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .glass { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(12px); }
+        .bg-cinema { background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-cinema text-white font-sans min-h-screen">
+
+    <nav class="glass border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-black text-red-600 tracking-tighter uppercase">
+                Cine<span class="text-white">Flash</span>
+            </h1>
+            <div class="hidden md:flex space-x-8 text-xs font-bold uppercase tracking-widest">
+                <a href="#films" class="hover:text-red-500 transition">À l'affiche</a>
+                <a href="#planning" class="hover:text-red-500 transition">Séances</a>
+                <a href="#admin-zone" class="text-red-500 hover:text-white transition underline decoration-2">Console Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        
+        <section id="films" class="mb-20">
+            <h3 class="text-3xl font-bold uppercase italic mb-8 border-l-4 border-red-600 pl-4">À l'affiche</h3>
+            <div id="movie-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                </div>
+        </section>
+
+        <section id="planning" class="mb-20 glass p-8 rounded-3xl border border-white/5 bg-red-900/5">
+            <h3 class="text-3xl font-bold italic uppercase mb-8">Programmation des séances</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-gray-500 border-b border-white/10 text-xs uppercase tracking-widest">
+                            <th class="p-4">Film</th>
+                            <th class="p-4">Salle</th>
+                            <th class="p-4">Horaire</th>
+                            <th class="p-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="screening-list-body" class="divide-y divide-white/5">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <hr class="border-white/10 mb-20">
+
+        <h3 id="admin-zone" class="text-4xl font-black text-center uppercase mb-12 tracking-tighter">Console d'administration</h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+            <div class="bg-gray-900/40 p-6 rounded-2xl border border-white/5">
+                <h4 class="text-xl font-bold mb-6 text-red-500"><i class="fas fa-plus-circle mr-2"></i> Nouveau Film</h4>
+                <form id="add-movie-form" class="space-y-4">
+                    <input type="text" name="title" placeholder="Titre" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none focus:border-red-600" required>
+                    <input type="text" name="genre" placeholder="Genre" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" name="duration" placeholder="Min" class="bg-black/50 border border-white/10 p-3 rounded-lg outline-none">
+                        <input type="number" name="release_year" placeholder="Année" class="bg-black/50 border border-white/10 p-3 rounded-lg outline-none">
+                    </div>
+                    <textarea name="description" placeholder="Synopsis" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg h-24 outline-none"></textarea>
+                    <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-red-600 hover:text-white transition">Ajouter le film</button>
+                </form>
+            </div>
+
+            <div class="bg-gray-900/40 p-6 rounded-2xl border border-white/5">
+                <h4 class="text-xl font-bold mb-6 text-red-500"><i class="fas fa-door-open mr-2"></i> Nouvelle Salle</h4>
+                <form id="add-room-form" class="space-y-4">
+                    <input type="text" name="name" placeholder="Nom (ex: Salle 1)" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none focus:border-red-600" required>
+                    <input type="number" name="capacity" placeholder="Capacité" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none" required>
+                    <select name="type" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none">
+                        <option value="Standard">Standard</option>
+                        <option value="IMAX">IMAX</option>
+                        <option value="VIP">VIP</option>
+                    </select>
+                    <button type="submit" class="w-full bg-gray-700 text-white font-bold py-3 rounded-lg hover:bg-white hover:text-black transition">Créer la salle</button>
+                </form>
+            </div>
+
+            <div class="bg-gray-900/40 p-6 rounded-2xl border border-white/5">
+                <h4 class="text-xl font-bold mb-6 text-red-500"><i class="fas fa-calendar-alt mr-2"></i> Planifier Séance</h4>
+                <form id="add-screening-form" class="space-y-4">
+                    <select name="movie_id" id="movie-select" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none" required>
+                        <option value="">Chargement des films...</option>
+                    </select>
+                    <select name="room_id" id="room-select" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none" required>
+                        <option value="">Chargement des salles...</option>
+                    </select>
+                    <input type="datetime-local" name="start_time" class="w-full bg-black/50 border border-white/10 p-3 rounded-lg outline-none text-gray-400" required>
+                    <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition">Valider la séance</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="space-y-12">
+            
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h4 class="text-2xl font-bold mb-6 italic uppercase text-red-500">Liste des Films en Base</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-white/10 text-xs uppercase">
+                                <th class="p-4">Titre</th>
+                                <th class="p-4">Genre</th>
+                                <th class="p-4">Durée</th>
+                                <th class="p-4">Année</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movie-list-body" class="divide-y divide-white/5">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="salles" class="glass p-8 rounded-3xl border border-white/5">
+                <h4 class="text-2xl font-bold mb-6 italic uppercase text-red-500">Gestion des Salles</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-white/10 text-xs uppercase">
+                                <th class="p-4">Nom</th>
+                                <th class="p-4">Capacité</th>
+                                <th class="p-4">Type</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="room-list-body" class="divide-y divide-white/5">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+</body>
+</html>
