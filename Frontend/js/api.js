@@ -1,3 +1,6 @@
+/**
+ * CONFIGURATION
+ */
 const API_URL = 'http://localhost:8000/index.php';
 
 /**
@@ -8,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
+// Fonction globale pour rafraîchir toutes les listes
 function refreshAll() {
     loadMovies();
     loadRooms();
@@ -26,39 +30,48 @@ async function loadMovies() {
         const response = await fetch(`${API_URL}?action=list_movie`);
         const movies = await response.json();
 
-        // Affichage en grille (Public)
+        // Remplissage de la grille publique (avec Description)
         if (grid) {
             grid.innerHTML = movies.map(movie => `
-                <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-white/5 p-4">
+                <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-white/5 p-5 flex flex-col h-full">
                     <div class="h-40 bg-gray-700 rounded-lg mb-4 flex items-center justify-center italic text-gray-500 text-xs text-center p-2">
                         Affiche : ${movie.title}
                     </div>
                     <h4 class="font-bold text-lg truncate">${movie.title}</h4>
-                    <p class="text-red-500 text-xs font-bold mb-2">${movie.genre || 'Cinéma'}</p>
-                    <div class="flex justify-between text-xs text-gray-400">
-                        <span>${movie.duration} min</span>
-                        <span>${movie.release_year}</span>
+                    <p class="text-red-500 text-xs font-bold mb-2 uppercase tracking-wider">${movie.genre || 'Cinéma'}</p>
+                    
+                    <p class="text-gray-400 text-sm mb-4 line-clamp-3 italic flex-grow">
+                        ${movie.description || 'Aucun résumé disponible.'}
+                    </p>
+
+                    <div class="flex justify-between text-xs text-gray-500 pt-4 border-t border-white/5">
+                        <span><i class="far fa-clock mr-1"></i>${movie.duration} min</span>
+                        <span><i class="far fa-calendar-alt mr-1"></i>${movie.release_year}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Affichage en tableau (Admin)
+        // Remplissage du tableau admin
         if (tbody) {
             tbody.innerHTML = movies.map(movie => `
                 <tr class="hover:bg-white/5 transition border-b border-white/5">
                     <td class="p-4 font-bold text-white">${movie.title}</td>
-                    <td class="p-4 text-red-500 text-xs font-bold">${movie.genre || 'N/A'}</td>
+                    <td class="p-4 text-red-500 text-xs font-bold uppercase">${movie.genre || 'N/A'}</td>
                     <td class="p-4 text-sm text-gray-400">${movie.duration} min</td>
                     <td class="p-4 text-sm text-gray-400">${movie.release_year}</td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="editMovie(${JSON.stringify(movie).replace(/"/g, '&quot;')})" class="text-blue-400 hover:text-blue-600"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteMovie(${movie.id})" class="text-gray-500 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    <td class="p-4 text-right space-x-3">
+                        <button onclick='editMovie(${JSON.stringify(movie).replace(/'/g, "&apos;")})' class="text-blue-400 hover:text-blue-200 transition">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteMovie(${movie.id})" class="text-gray-500 hover:text-red-500 transition">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             `).join('');
         }
-    } catch (e) { console.error("Erreur films:", e); }
+    } catch (e) { console.error("Erreur chargement films:", e); }
 }
 
 async function loadRooms() {
@@ -71,14 +84,20 @@ async function loadRooms() {
             <tr class="hover:bg-white/5 transition border-b border-white/5">
                 <td class="p-6 font-bold text-white">${room.name}</td>
                 <td class="p-6 text-gray-400">${room.capacity} places</td>
-                <td class="p-6"><span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold">${room.type}</span></td>
-                <td class="p-6 text-right space-x-2">
-                    <button onclick="editRoom(${JSON.stringify(room).replace(/"/g, '&quot;')})" class="text-blue-400 hover:text-blue-600"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteRoom(${room.id})" class="text-gray-500 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                <td class="p-6">
+                    <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold">${room.type}</span>
+                </td>
+                <td class="p-6 text-right space-x-3">
+                    <button onclick='editRoom(${JSON.stringify(room).replace(/'/g, "&apos;")})' class="text-blue-400 hover:text-blue-200 transition">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteRoom(${room.id})" class="text-gray-500 hover:text-red-500 transition">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </td>
             </tr>
         `).join('');
-    } catch (e) { console.error("Erreur salles:", e); }
+    } catch (e) { console.error("Erreur chargement salles:", e); }
 }
 
 async function loadScreenings() {
@@ -93,15 +112,17 @@ async function loadScreenings() {
                 <td class="p-6 text-gray-300">${s.room_name}</td>
                 <td class="p-6 font-mono text-sm text-gray-400">${new Date(s.start_time).toLocaleString('fr-FR')}</td>
                 <td class="p-6 text-right">
-                    <button onclick="deleteScreening(${s.id})" class="text-gray-500 hover:text-red-500"><i class="fas fa-times"></i></button>
+                    <button onclick="deleteScreening(${s.id})" class="text-gray-500 hover:text-red-500 transition">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </td>
             </tr>
         `).join('');
-    } catch (e) { console.error("Erreur séances:", e); }
+    } catch (e) { console.error("Erreur chargement séances:", e); }
 }
 
 /**
- * 3. SUPPRESSIONS (DELETE)
+ * 3. ACTIONS DE SUPPRESSION (DELETE)
  */
 
 async function deleteMovie(id) {
@@ -126,7 +147,7 @@ async function deleteScreening(id) {
 }
 
 /**
- * 4. MODIFICATIONS (UPDATE)
+ * 4. PRÉPARATION À LA MODIFICATION (UPDATE - UI)
  */
 
 function editMovie(movie) {
@@ -135,12 +156,14 @@ function editMovie(movie) {
     form.genre.value = movie.genre;
     form.duration.value = movie.duration;
     form.release_year.value = movie.release_year;
-    form.description.value = movie.description;
+    form.description.value = movie.description || '';
     
-    // On change l'action du formulaire pour l'update
-    form.dataset.editId = movie.id;
-    form.querySelector('button').innerText = "Enregistrer les modifications";
-    form.querySelector('button').classList.replace('bg-white', 'bg-blue-600');
+    form.dataset.editId = movie.id; 
+    
+    const btn = form.querySelector('button');
+    btn.innerText = "Enregistrer les modifications";
+    btn.className = "w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition";
+    
     window.location.hash = "admin-zone";
 }
 
@@ -150,14 +173,17 @@ function editRoom(room) {
     form.capacity.value = room.capacity;
     form.type.value = room.type;
     
-    form.dataset.editId = room.id;
-    form.querySelector('button').innerText = "Modifier la salle";
-    form.querySelector('button').classList.replace('bg-gray-700', 'bg-blue-600');
+    form.dataset.editId = room.id; 
+
+    const btn = form.querySelector('button');
+    btn.innerText = "Mettre à jour la salle";
+    btn.className = "w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition";
+    
     window.location.hash = "admin-zone";
 }
 
 /**
- * 5. ENVOIS ET FORMULAIRES (CREATE & UPDATE)
+ * 5. GESTION DES FORMULAIRES (CREATE & UPDATE)
  */
 
 function setupEventListeners() {
@@ -178,8 +204,13 @@ function handleFormSubmit(formId, addAction, updateAction) {
         const formData = new FormData(form);
         if (editId) formData.append('id', editId);
 
+        console.log(`Envoi vers : ${action} | ID : ${editId || 'Nouveau'}`);
+
         try {
-            const response = await fetch(`${API_URL}?action=${action}`, { method: 'POST', body: formData });
+            const response = await fetch(`${API_URL}?action=${action}`, { 
+                method: 'POST', 
+                body: formData 
+            });
             const result = await response.json();
 
             if (result.message) {
@@ -187,9 +218,12 @@ function handleFormSubmit(formId, addAction, updateAction) {
                 resetForm(form);
                 refreshAll();
             } else {
-                alert("Erreur: " + result.error);
+                alert("Erreur: " + (result.error || "Réponse serveur invalide"));
             }
-        } catch (e) { console.error("Erreur envoi:", e); }
+        } catch (e) { 
+            console.error("Erreur réseau :", e);
+            alert("Erreur de connexion au serveur.");
+        }
     });
 }
 
@@ -207,7 +241,7 @@ function resetForm(form) {
 }
 
 /**
- * 6. UTILITAIRES
+ * 6. UTILITAIRES (SELECTS DYNAMIQUES)
  */
 
 async function fillSelects() {
@@ -227,5 +261,5 @@ async function fillSelects() {
 
         if (rSelect) rSelect.innerHTML = '<option value="">Choisir une salle</option>' + 
             rooms.map(r => `<option value="${r.id}">${r.name} (${r.type})</option>`).join('');
-    } catch (e) { console.error("Erreur selects:", e); }
+    } catch (e) { console.error("Erreur remplissage selects:", e); }
 }

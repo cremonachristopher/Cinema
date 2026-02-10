@@ -55,7 +55,7 @@ class RoomsController {
             $rooms->active = isset ($_POST['active']) ? (bool)$_POST['active'] : $rooms->active;
 
                 if ($this->repository->update($rooms)) {
-                    echo json_encode(["message" => "Salle mis à jour", "movie" => $rooms]);
+                    echo json_encode(["message" => "Salle mis à jour", "rooms" => $rooms]);
                 } else {
                     http_response_code(500);
                     echo json_encode (["error" => "Erreur lors de la mise  jour."]);

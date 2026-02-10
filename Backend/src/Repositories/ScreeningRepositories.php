@@ -33,7 +33,6 @@ class ScreeningRepositories {
                 JOIN movies m ON s.movie_id = m.id
                 JOIN rooms r ON s.room_id = r.id
                 ORDER BY s.start_time ASC";
-
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -22,7 +22,7 @@ class RoomsRepositories {
     }
 #Lecture
     public function find (int $id): ?Rooms {
-        $stmt = $this->pdo->prepare("SELECT * from Rooms WHERE id =?");
+        $stmt = $this->pdo->prepare("SELECT * from rooms WHERE id =?");
         $stmt->execute([$id]);
         $rooms = $stmt->fetchObject("Rooms");
         return $rooms ?: null;
@@ -39,7 +39,8 @@ class RoomsRepositories {
         $rooms->name,
         $rooms->capacity,
         $rooms->type,
-        $rooms->active ? 1 : 0
+        $rooms->active ? 1 : 0,
+        $rooms->id
     ]);
     }
 #Supprimer
